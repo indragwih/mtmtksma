@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematika SMA</title>
+    <style>
+        :root {
+            --sky-top: #4facfe;
+            --sky-bottom: #00f2fe;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --text-main: #2c3e50;
+            --accent: #0984e3;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --celestial-obj: #fbc531; 
+            --cloud-opacity: 1;
+            --star-opacity: 0;
+        }
+
+        [data-theme="dark"] {
+            --sky-top: #0f172a;
+            --sky-bottom: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.9);
+            --text-main: #f8fafc;
+            --accent: #38bdf8;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --celestial-obj: #f5f6fa;
+            --cloud-opacity: 0;
+            --star-opacity: 1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+
+        body {
+            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-main);
+            transition: background 1.5s ease;
+            overflow-x: hidden;
+        }
+
+        /* --- LANGIT & AWAN REALISTIK --- */
+        .celestial {
+            position: fixed; top: 40px; right: 50px;
+            width: 80px; height: 80px;
+            background: var(--celestial-obj);
+            border-radius: 50%;
+            box-shadow: 0 0 50px var(--celestial-obj);
+            transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: -1;
+        }
+
+        .clouds-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; opacity: var(--cloud-opacity); transition: opacity 1s ease;
+            pointer-events: none;
+        }
+
+        .real-cloud {
+            position: absolute; width: 200px; height: 60px;
+            background: #fff; border-radius: 200px; filter: blur(8px);
+            animation: moveClouds linear infinite;
+            box-shadow: 40px 20px 20px 10px #fff, -40px 10px 20px 10px #fff, 10px -30px 30px 15px #fff, 70px -10px 25px 5px #fff;
+        }
+
+        @keyframes moveClouds {
+            from { transform: translateX(-300px); }
+            to { transform: translateX(110vw); }
+        }
+
+        .stars-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -3; opacity: var(--star-opacity); transition: 1.5s;
+        }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--d) infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+
+        /* --- UI COMPONENTS --- */
+        header { text-align: center; padding: 60px 20px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        
+        .dark-mode-toggle {
+            position: fixed; top: 20px; right: 20px;
+            background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+            color: var(--text-main); border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px; border-radius: 50px; cursor: pointer;
+            z-index: 100; font-weight: bold; box-shadow: var(--shadow);
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; position: relative; }
+
+        .materi-card {
+            background: var(--card-bg); border-radius: 24px;
+            padding: 30px; margin-bottom: 35px; box-shadow: var(--shadow);
+            backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .materi-title { color: var(--accent); margin-bottom: 20px; font-size: 1.9rem; font-weight: 800; }
+
+        .sub-header { 
+            background: var(--accent); color: white; 
+            padding: 5px 15px; border-radius: 8px; 
+            display: inline-block; margin: 15px 0 10px 0; 
+            font-size: 0.9rem; font-weight: bold;
+        }
+
+        .collapsible {
+            background: rgba(0,0,0,0.03); border-radius: 15px;
+            margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] .collapsible { background: rgba(255,255,255,0.03); }
+
+        .btn-toggle {
+            width: 100%; padding: 18px 22px; background: none; border: none;
+            text-align: left; font-weight: 700; cursor: pointer;
+            display: flex; justify-content: space-between; color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .btn-toggle span {
+            background: var(--accent); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; transition: 0.3s;
+        }
+
+        .content { display: none; padding: 10px 22px 25px; line-height: 1.8; font-size: 1rem; }
+
+        .rumus-box {
+            background: linear-gradient(135deg, var(--accent), #3498db); color: white; padding: 20px;
+            border-radius: 16px; margin: 10px 0; font-size: 1.25rem; text-align: center;
+            box-shadow: 0 4px 15px rgba(9, 132, 227, 0.3); font-family: 'Courier New', Courier, monospace;
+        }
+
+        .var-list { list-style: none; margin-bottom: 20px; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 12px; }
+        .var-list li { margin-bottom: 8px; font-size: 0.95rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
+        [data-theme="dark"] .var-list { background: rgba(255,255,255,0.02); }
+
+        .soal-box {
+            background: rgba(230, 126, 34, 0.08); border-left: 5px solid #e67e22;
+            padding: 20px; border-radius: 12px; margin-top: 15px;
+        }
+
+        .pembahasan {
+            background: white; color: #2c3e50;
+            padding: 18px; border-radius: 12px; margin-top: 15px; border-left: 5px solid #2ecc71;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        [data-theme="dark"] .pembahasan { background: #0f172a; color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+    <div class="celestial" id="skyObj"></div>
+    <div class="stars-container" id="starContainer"></div>
+    <div class="clouds-container" id="cloudContainer"></div>
+
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()" id="themeBtn">🌙 Mode Gelap</button>
+
+    <header>
+        <h1>🎓 Matematika</h1>
+        <p>MATERI PELAJARAN MATEMATIKA TINGKAT SMA KELAS XI</p>
+    </header>
+
+    <div class="container" id="app"></div>
+
+    <audio id="clickSound"><source src="Sound.mp3" type="audio/mpeg"></audio>
+
+    <script>
+        function generateClouds() {
+            const container = document.getElementById('cloudContainer');
+            const configs = [
+                { top: '10%', scale: 1, duration: '40s', delay: '0s' },
+                { top: '25%', scale: 0.8, duration: '55s', delay: '-10s' },
+                { top: '50%', scale: 1.2, duration: '45s', delay: '-25s' }
+            ];
+            configs.forEach(conf => {
+                const cloud = document.createElement('div');
+                cloud.className = 'real-cloud';
+                cloud.style.top = conf.top;
+                cloud.style.transform = `scale(${conf.scale})`;
+                cloud.style.animationDuration = conf.duration;
+                cloud.style.animationDelay = conf.delay;
+                container.appendChild(cloud);
+            });
+        }
+
+        function generateStars() {
+            const container = document.getElementById('starContainer');
+            for(let i=0; i<80; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
+                s.style.width = s.style.height = (Math.random()*3)+'px';
+                s.style.setProperty('--d', (Math.random()*4+2)+'s');
+                container.appendChild(s);
+            }
+        }
+
+        const dataMateri = [
+            {
+                judul: "1. Suku Bunga",
+                sejarah: "Konsep bunga telah ada sejak zaman Babilonia, namun <b>Jakob Bernoulli</b> adalah orang yang membawa bunga majemuk ke dalam ranah kalkulus modern saat meneliti limit pertumbuhan modal.",
+                rumus: `
+                    <div class="sub-header">A. BUNGA TUNGGAL</div>
+                    <p>Bunga yang dihitung berdasarkan modal awal saja.</p>
+                    <div class="rumus-box">B = M × i × t</div>
+                    <ul class="var-list">
+                        <li><b>B</b>: Besar Bunga (Total rupiah keuntungan)</li>
+                        <li><b>M</b>: Modal Awal (Tabungan pokok)</li>
+                        <li><b>i</b>: Suku Bunga (Persentase per periode)</li>
+                        <li><b>t</b>: Waktu/Jangka Waktu</li>
+                    </ul>
+
+                    <div class="sub-header">B. BUNGA MAJEMUK</div>
+                    <p>Bunga yang dihitung berdasarkan modal akhir periode sebelumnya (bunga berbunga).</p>
+                    <div class="rumus-box">Mn = M(1 + i)ⁿ</div>
+                    <ul class="var-list">
+                        <li><b>Mn</b>: Modal Akhir (Total uang setelah periode ke-n)</li>
+                        <li><b>n</b>: Jumlah periode bunga</li>
+                    </ul>`,
+                soal: `
+                    <div class="soal-box">
+                        <span style="font-weight:bold; color:#e67e22;">[SOAL 1: BUNGA TUNGGAL]</span><br>
+                        Andi menabung Rp2.000.000 dengan bunga tunggal 10% per tahun. Hitung bunga yang diperoleh setelah 3 tahun.
+                        <div class="pembahasan">
+                            <b>Diketahui:</b> M = 2.000.000, i = 10% (0,1), t = 3<br>
+                            <b>Penyelesaian:</b><br>
+                            B = M × i × t<br>
+                            B = 2.000.000 × 0,1 × 3<br>
+                            B = 200.000 × 3 = <b>Rp600.000</b>
+                        </div>
+                    </div>
+                    <div class="soal-box">
+                        <span style="font-weight:bold; color:#e67e22;">[SOAL 2: BUNGA MAJEMUK]</span><br>
+                        Siska menabung Rp5.000.000 dengan bunga majemuk 5% per tahun. Berapa modal akhir setelah 2 tahun?
+                        <div class="pembahasan">
+                            <b>Diketahui:</b> M = 5.000.000, i = 0,05, n = 2<br>
+                            <b>Penyelesaian:</b><br>
+                            Mn = M(1 + i)ⁿ<br>
+                            Mn = 5.000.000 × (1 + 0,05)²<br>
+                            Mn = 5.000.000 × (1,0609)<br>
+                            Mn = <b>Rp5.304.500</b>
+                        </div>
+                    </div>`
+            },
+            {
+                judul: "2. Kaidah Pencacahan",
+                sejarah: "Dikembangkan oleh <b>Pascal</b> dan <b>Fermat</b> untuk menganalisis peluang dalam permainan dadu.",
+                rumus: `
+                    <div class="rumus-box">P(n, r) = n! / (n - r)!</div>
+                    <ul class="var-list">
+                        <li><b>P</b>: Permutasi (Urutan penting)</li>
+                        <li><b>n</b>: Total objek</li>
+                        <li><b>r</b>: Objek dipilih</li>
+                    </ul>
+                    <div class="rumus-box">C(n, r) = n! / (r! × (n-r)!)</div>
+                    <ul class="var-list">
+                        <li><b>C</b>: Kombinasi (Urutan tidak penting)</li>
+                    </ul>`,
+                soal: `
+                    <div class="soal-box">
+                        <b>Contoh:</b> Memilih 2 pengurus dari 4 calon (Permutasi).
+                        <div class="pembahasan">
+                            P(4,2) = 4! / (4-2)! = (4 × 3 × 2!) / 2! = <b>12 cara</b>.
+                        </div>
+                    </div>`
+            },
+            {
+                judul: "3. Faktorial",
+                sejarah: "Simbol (!) diperkenalkan oleh <b>Christian Kramp</b>.",
+                rumus: `
+                    <div class="rumus-box">n! = n × (n-1) × ... × 1</div>
+                    <ul class="var-list">
+                        <li><b>n!</b>: n Faktorial</li>
+                        <li><b>Catatan:</b> 0! = 1</li>
+                    </ul>`,
+                soal: `
+                    <div class="soal-box">
+                        <b>Contoh:</b> Berapa nilai 4! + 2!?
+                        <div class="pembahasan">
+                            4! = 24, 2! = 2. Hasil = 24 + 2 = <b>26</b>.
+                        </div>
+                    </div>`
+            },
+            {
+                judul: "4. Polinomial",
+                sejarah: "<b>William Horner</b> menciptakan metode pembagian suku banyak yang efisien.",
+                rumus: `
+                    <div class="rumus-box">f(x) = aₙxⁿ + ... + a₀</div>
+                    <ul class="var-list">
+                        <li><b>f(x)</b>: Suku Banyak</li>
+                        <li><b>n</b>: Derajat tertinggi</li>
+                    </ul>`,
+                soal: `
+                    <div class="soal-box">
+                        <b>Contoh:</b> Sisa f(x) = x² + 1 dibagi (x-1).
+                        <div class="pembahasan">
+                            Sisa = f(1) = 1² + 1 = <b>2</b>.
+                        </div>
+                    </div>`
+            },
+            {
+                judul: "5. Vektor",
+                sejarah: "<b>Gibbs</b> dan <b>Heaviside</b> memajukan notasi vektor untuk fisika.",
+                rumus: `
+                    <div class="rumus-box">|a| = √(x² + y²)</div>
+                    <ul class="var-list">
+                        <li><b>|a|</b>: Panjang Vektor</li>
+                        <li><b>x, y</b>: Komponen vektor</li>
+                    </ul>`,
+                soal: `
+                    <div class="soal-box">
+                        <b>Contoh:</b> Panjang vektor (3, 4).
+                        <div class="pembahasan">
+                            √(3² + 4²) = √25 = <b>5</b>.
+                        </div>
+                    </div>`
+            },
+            {
+                judul: "6. Trigonometri",
+                sejarah: "Ditemukan oleh ilmuwan Yunani dan dikembangkan oleh astronom Muslim seperti <b>Al-Battani</b>.",
+                rumus: `
+                    <div class="rumus-box">sin²A + cos²A = 1</div>
+                    <ul class="var-list">
+                        <li><b>sin</b>: Sisi depan / miring</li>
+                        <li><b>cos</b>: Sisi samping / miring</li>
+                    </ul>`,
+                soal: `
+                    <div class="soal-box">
+                        <b>Contoh:</b> Sederhanakan (1 - sin²A).
+                        <div class="pembahasan">
+                            Berdasarkan identitas, hasilnya adalah <b>cos²A</b>.
+                        </div>
+                    </div>`
+            }
+        ];
+
+        function initApp() {
+            generateClouds(); generateStars();
+            const app = document.getElementById('app');
+            dataMateri.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'materi-card';
+                card.innerHTML = `
+                    <h2 class="materi-title">${m.judul}</h2>
+                    <div class="collapsible">
+                        <button class="btn-toggle" onclick="toggleMateri(this)">👤 Sejarah & Tokoh <span>▼</span></button>
+                        <div class="content"><p>${m.sejarah}</p></div>
+                    </div>
+                    <div class="collapsible">
+                        <button class="btn-toggle" onclick="toggleMateri(this)">📐 Rumus & Detail Variabel <span>▼</span></button>
+                        <div class="content">${m.rumus}</div>
+                    </div>
+                    <div class="collapsible">
+                        <button class="btn-toggle" onclick="toggleMateri(this)">📝 Contoh Soal Terperinci <span>▼</span></button>
+                        <div class="content">${m.soal}</div>
+                    </div>
+                `;
+                app.appendChild(card);
+            });
+        }
+
+        function toggleMateri(btn) {
+            document.getElementById('clickSound').play().catch(()=>{});
+            const content = btn.nextElementSibling;
+            const span = btn.querySelector('span');
+            const isOpen = content.style.display === "block";
+            content.style.display = isOpen ? "none" : "block";
+            span.innerText = isOpen ? "▼" : "▲";
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            if(isDark) {
+                body.removeAttribute('data-theme');
+                btn.innerHTML = "🌙 Mode Gelap";
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.innerHTML = "☀️ Mode Terang";
+            }
+            document.getElementById('clickSound').play().catch(()=>{});
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
